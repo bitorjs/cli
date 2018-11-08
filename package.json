@@ -7,7 +7,7 @@
     "bitor": "./bin/index.js"
   },
   "scripts": {
-    "test": "node src/index.js"
+    "test": "node src/master.js"
   },
   "repository": {
     "type": "git",
