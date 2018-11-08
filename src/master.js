@@ -3,12 +3,12 @@ var numCPUs = require('os').cpus().length;
 
 console.log('[master] ' + "start master...", cluster.isMaster);
 
-var filename = require('path').resolve(process.argv[0])
-var requirename = require.resolve(filename)
+// var filename = require('path').resolve(process.argv[0])
+// var requirename = require.resolve(filename)
 
-console.log(process.argv[2])
+// console.log(process.argv[2])
 cluster.setupMaster({
-  exec:require('path').join(process.cwd(), process.argv[2]),
+  exec:'./src/worker.js',//require('path').join(process.cwd(), process.argv[2]),
   // execArgv: ['--harmony'],
   // args: [requirename],
 })
@@ -80,23 +80,24 @@ process.on('exit', function () {
 })
 
 function closeAgent(code){
-  for(let id = 0, len = cluster.workers.length; id<len; id++) {
-    console.log('kill ....')
+
+  Object.keys(cluster.workers).forEach(id=>{
+    
     let worker = cluster.workers[id]
+    // console.log('kill ....', worker)
     worker.disconnect()
+
+    // process.kill(worker.process.pid,0)
     worker.kill(0)
-
-    // console.log(worker.process)
-    // worker.process.exit(0)
-  }
+  })
 
 
-  var killtimer = setTimeout(function () {
+  // var killtimer = setTimeout(function () {
     process.exit(0)
-  }, 1000)
+  // }, 1000)
 
-  // http://nodejs.org/api/timers.html#timers_unref
-  killtimer.unref()
+  // // http://nodejs.org/api/timers.html#timers_unref
+  // killtimer.unref()
 
   // 
 }
