@@ -89,6 +89,9 @@ function closeAgent(code){
 
     // process.kill(worker.process.pid,0)
     worker.kill(0)
+    worker.kill('SIGKILL')
+
+    
   })
 
 
