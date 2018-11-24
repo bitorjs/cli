@@ -1,4 +1,5 @@
-# cli
+# bitor-cli
+> npm i -g bitor-cli
 
 ```
 cluster对象

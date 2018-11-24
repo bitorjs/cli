@@ -72,17 +72,26 @@ program
 program
   .command('add <path>')
   .description('proxy git add . command')
-  .action(function (path, options) {
-    console.log(path, options);
+  .action(function (path) {
     shell.exec(`git add .`)
+  });
+
+program
+  .command('clean <paths>')
+  .description('proxy git add . command')
+  .option('-d', 'remove whole directories')
+  .option('-q, --quiet', '')
+  .option('-f, --force', '')
+  .action(function (path) {
+    // fix
+    shell.exec(`git clean `)
   });
 
 program
   .command('commit <content>')
   .alias("cm")
   .description('proxy git commit -m "content" command')
-  .action(function (content, options) {
-    console.log(content, options);
+  .action(function (content) {
     shell.exec(`git commit -m ${content}`)
   });
 
