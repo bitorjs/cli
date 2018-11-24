@@ -121,7 +121,6 @@ program
     if (this.react) tpl = 'react';
 
     if (!project) project = `${tpl}-demo`;
-
     clone(`https://github.com/bitorjs/${tpl}-template.git`, pwd + `/${project}`, null, function () {
       shell.rm('-rf', pwd + `/${project}/.git`)
     })
