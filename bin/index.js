@@ -110,31 +110,21 @@ program
 
 // for bitor
 program
-  .command('new [tpl] [project]')
+  .command('new [project]')
   .alias('n')
   .description("create a project with the vue|react template.")
-  .action(function (tpl, project, ops) {
+  .option('-v, --vue', 'vue template')
+  .option('-r, --react', 'react template')
+  .action(function (project) {
+    let tpl = 'vue';
     let pwd = shell.pwd()
+    if (this.react) tpl = 'react';
 
-    if (tpl) {
-      tpl = tpl.toLowerCase()
-      switch (tpl) {
-        case 'react':
-          tpl = 'react';
-          if (!project) project = "react-demo";
-          break;
-        default:
-          tpl = 'vue';
-          if (!project) project = "vue-demo";
-          break;
-      }
-      clone(`https://github.com/bitorjs/${tpl}-template.git`, pwd + `/${project}`, null, function () {
-        shell.rm('-rf', pwd + `/${project}/.git`)
-      })
+    if (!project) project = `${tpl}-demo`;
 
-    } else {
-      console.log(chalk.red('bitor need a template, e.g. vue or react'))
-    }
+    clone(`https://github.com/bitorjs/${tpl}-template.git`, pwd + `/${project}`, null, function () {
+      shell.rm('-rf', pwd + `/${project}/.git`)
+    })
   })
 
 program.parse(process.argv);
