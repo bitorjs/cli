@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
 const program = require('commander');
-// const chalk = require('chalk')
+const chalk = require('chalk')
 const clone = require('git-clone')
 const shell = require('shelljs');
 const log = require('tracer').colorConsole()
-// const xu = require('../src/index');
 
 
 /**
@@ -14,39 +13,130 @@ const log = require('tracer').colorConsole()
 
 program
   .version(require('../package').version, "-v, --version")
-  .description('bitor 应用模板工程的 cli')
+  .usage('<cmd> [env]')
+  .description('Bitor CLI is a front-end project development tool.')
 
+// proxy  npm 
 program
-  .command('create')
+  .command('install <name>')
+  .description('proxy npm install command')
+  .alias('i')
+  .option("-S, --save", "")
+  .option("-D, --save-dev", "")
+  .option("-g, --global", "")
+  .action(function (name) {
+    let option = '--save';
+    if (this.global) option = '-g';
+    if (this.saveDev) option = '-D'
 
-  .description('quick generate your file')
-  .alias('c')
-  .action(function (...args) {
-    // xu.run(type, name);
-    console.log(args)
+    if (shell.which('npm')) {
+      shell.exec(`npm i ${option} ${name}`)
+    } else {
+      shell.echo('Sorry, this script requires npm');
+    }
+  });
+
+// proxy git
+program
+  .command('clone <url>')
+  .description('proxy git clone command')
+  .alias('cl')
+  .action(function (url) {
+    shell.exec(`git clone ${url}`)
   });
 
 program
-  // .help(function () {
+  .command('pull')
+  .description('proxy git pull command')
+  .alias('pl')
+  .action(function () {
+    shell.exec(`git pull`)
+  });
 
-  // })
-  .command('clone <tpl> <project>')
-  .option('-h, --help', "") //"clone the template"
-  .action(function (tpl, project) {
-    // if (!!tpl === false) {
-    // log.info('目前 bitor 支持以下模板：')
-    // log.info('e.g. bitor template myproject')
-    // }
-    if (tpl && project) {
-      let pwd = shell.pwd()
-      // log.info(`clone the template here：${pwd}/${project}/ ...`)
-      clone(`https://github.com/bitores/${tpl}.git`, pwd + `/${project}`, null, function () {
+program
+  .command('push')
+  .description('proxy git push command')
+  .alias('ps')
+  .action(function () {
+    shell.exec(`git push`)
+  });
+
+program
+  .command('status')
+  .alias('st')
+  .description('proxy git status command')
+  .action(function () {
+    shell.exec(`git status`)
+  });
+
+program
+  .command('add <path>')
+  .description('proxy git add . command')
+  .action(function (path, options) {
+    console.log(path, options);
+    shell.exec(`git add .`)
+  });
+
+program
+  .command('commit <content>')
+  .alias("cm")
+  .description('proxy git commit -m "content" command')
+  .action(function (content, options) {
+    console.log(content, options);
+    shell.exec(`git commit -m ${content}`)
+  });
+
+program
+  .command('checkout [branch]')
+  .alias('co')
+  .description('proxy git checkout command')
+  .option("-b", "")
+  .action(function (branch) {
+    let option = '';
+    if (this.b) option = '-b';
+    shell.exec(`git checkout ${option} ${branch}`)
+  });
+
+program
+  .command('branch')
+  .alias('br')
+  .description('proxy git branch command')
+  .option("-a", "")
+  .action(function () {
+    let option = '';
+    if (this.a) option = '-a';
+    shell.exec(`git branch ${option}`)
+  });
+
+// for bitor
+program
+  .command('new [tpl] [project]')
+  .alias('n')
+  .description("create a project with the vue|react template.")
+  .action(function (tpl, project, ops) {
+    let pwd = shell.pwd()
+
+    if (tpl) {
+      tpl = tpl.toLowerCase()
+      switch (tpl) {
+        case 'react':
+          tpl = 'react';
+          if (!project) project = "react-demo";
+          break;
+        default:
+          tpl = 'vue';
+          if (!project) project = "vue-demo";
+          break;
+      }
+      clone(`https://github.com/bitorjs/${tpl}-template.git`, pwd + `/${project}`, null, function () {
         shell.rm('-rf', pwd + `/${project}/.git`)
-        // log.info('模板工程建立完成')
       })
+
     } else {
-      log.error('e.g. bitor template myproject')
+      console.log(chalk.red('bitor need a template, e.g. vue or react'))
     }
   })
 
 program.parse(process.argv);
+
+// program.help();
