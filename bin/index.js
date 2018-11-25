@@ -6,6 +6,13 @@ const clone = require('git-clone')
 const shell = require('shelljs');
 const log = require('tracer').colorConsole()
 
+const config = {
+  silent: true
+}
+const callback = (code, stdout) => { //chalk.gray()
+  // console.log(stdout.replace(/git/g, 'bitor'))
+  console.log(stdout)
+}
 
 /**
  * Usage.
@@ -56,7 +63,7 @@ program
   .description('proxy git clone command')
   .alias('cl')
   .action(function (url) {
-    shell.exec(`git clone ${url}`)
+    shell.exec(`git clone ${url}`, config, callback)
   });
 
 program
@@ -64,7 +71,7 @@ program
   .description('proxy git pull command')
   .alias('pl')
   .action(function () {
-    shell.exec(`git pull`)
+    shell.exec(`git pull`, config, callback)
   });
 
 program
@@ -72,7 +79,7 @@ program
   .description('proxy git push command')
   .alias('ps')
   .action(function () {
-    shell.exec(`git push`)
+    shell.exec(`git push`, config, callback)
   });
 
 program
@@ -80,14 +87,14 @@ program
   .alias('st')
   .description('proxy git status command')
   .action(function () {
-    shell.exec(`git status`)
+    shell.exec(`git config --global color.status auto;git status`, config, callback)
   });
 
 program
   .command('add <path>')
   .description('proxy git add . command')
   .action(function (path) {
-    shell.exec(`git add .`)
+    shell.exec(`git add .`, config, callback)
   });
 
 program
@@ -98,8 +105,7 @@ program
   .option('-f, --force', '')
   .allowUnknownOption()
   .action(function (cmd) {
-    // fix
-    shell.exec(`git clean ${cmd.parent.rawArgs.slice(3).join(' ')}`)
+    shell.exec(`git clean ${cmd.parent.rawArgs.slice(3).join(' ')}`, config, callback)
   });
 
 program
@@ -107,7 +113,7 @@ program
   .alias("cm")
   .description('proxy git commit -m "content" command')
   .action(function (content) {
-    shell.exec(`git commit -m ${content}`)
+    shell.exec(`git commit -m ${content}`, config, callback)
   });
 
 program
@@ -118,7 +124,7 @@ program
   .action(function (branch) {
     let option = '';
     if (this.b) option = '-b';
-    shell.exec(`git checkout ${option} ${branch}`)
+    shell.exec(`git checkout ${option} ${branch}`, config, callback)
   });
 
 program
@@ -129,7 +135,7 @@ program
   .action(function () {
     let option = '';
     if (this.a) option = '-a';
-    shell.exec(`git branch ${option}`)
+    shell.exec(`git branch ${option}`, config, callback)
   });
 
 // for bitor
