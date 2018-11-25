@@ -36,6 +36,20 @@ program
     }
   });
 
+program
+  .command('start')
+  .description('proxy npm run command')
+  .action(function (script) {
+    shell.exec(`npm start`)
+  });
+
+program
+  .command('run <script>')
+  .description('proxy npm run command')
+  .action(function (script) {
+    shell.exec(`npm run ${script}`)
+  });
+
 // proxy git
 program
   .command('clone <url>')
@@ -77,14 +91,15 @@ program
   });
 
 program
-  .command('clean <paths>')
+  .command('clean')
   .description('proxy git add . command')
   .option('-d', 'remove whole directories')
   .option('-q, --quiet', '')
   .option('-f, --force', '')
-  .action(function (path) {
+  .allowUnknownOption()
+  .action(function (cmd) {
     // fix
-    shell.exec(`git clean `)
+    shell.exec(`git clean ${cmd.parent.rawArgs.slice(3).join(' ')}`)
   });
 
 program
@@ -135,6 +150,16 @@ program
     })
   })
 
+
+program
+  .command('*', 'Hidden commond', {
+    noHelp: true
+  })
+  .action(function (cmd) {
+    console.log(chalk.red(`Not find the command ${cmd}`));
+    program.help()
+  });
+
 program.parse(process.argv);
 
-// program.help();
+if (program.args.length === 0) program.help()
